@@ -9,6 +9,7 @@ import { PaymentSuccessScreen } from './components/PaymentSuccessScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { TableMapScreen } from './components/TableMapScreen';
 import { AdminDashboard } from './components/AdminDashboard';
+import { LogoPage } from './components/LogoPage';
 
 type Screen = 
   | 'splash' 
@@ -20,7 +21,8 @@ type Screen =
   | 'paymentSuccess'
   | 'profile' 
   | 'tableMap'
-  | 'admin';
+  | 'admin'
+  | 'logo';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
@@ -98,8 +100,10 @@ export default function App() {
       case 'admin':
         return <AdminDashboard onNavigate={handleNavigate} />;
       
+      case 'logo':
+        return <LogoPage onNavigate={handleNavigate} />;
+      
       default:
-        return <HomeScreen onNavigate={handleNavigate} />;
     }
   };
 

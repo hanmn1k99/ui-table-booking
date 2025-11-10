@@ -4,7 +4,7 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { motion } from 'motion/react';
-import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Clock, X, Edit } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Clock, X, Edit, Palette } from 'lucide-react';
 import { bookings, areas, mockUser } from '../data/mockData';
 
 interface ProfileScreenProps {
@@ -224,8 +224,16 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-8"
+          className="mt-8 space-y-3"
         >
+          <Button
+            onClick={() => onNavigate('logo')}
+            variant="outline"
+            className="w-full h-12 rounded-2xl border-2 border-orange-200 text-orange-600 hover:bg-orange-50"
+          >
+            <Palette className="w-5 h-5 mr-2" />
+            Xem Logo & Brand
+          </Button>
           <Button
             onClick={() => onNavigate('login')}
             variant="outline"

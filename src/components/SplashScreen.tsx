@@ -31,7 +31,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
           transition={{ delay: 0.3, duration: 0.6 }}
           className="text-orange-600 mb-2"
         >
-          TableBook
+          Nhà Hàng Gì Cũng Được
         </motion.h1>
         
         <motion.p
