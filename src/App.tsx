@@ -10,6 +10,7 @@ import { ProfileScreen } from './components/ProfileScreen';
 import { TableMapScreen } from './components/TableMapScreen';
 import { AdminDashboard } from './components/AdminDashboard';
 import { LogoPage } from './components/LogoPage';
+import { NotificationScreen } from './components/NotificationScreen';
 
 type Screen = 
   | 'splash' 
@@ -22,7 +23,8 @@ type Screen =
   | 'profile' 
   | 'tableMap'
   | 'admin'
-  | 'logo';
+  | 'logo'
+  | 'notifications';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
@@ -102,6 +104,9 @@ export default function App() {
       
       case 'logo':
         return <LogoPage onNavigate={handleNavigate} />;
+      
+      case 'notifications':
+        return <NotificationScreen onNavigate={handleNavigate} />;
       
       default:
     }
