@@ -58,8 +58,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               <span className="text-2xl">🍽️</span>
             </div>
             <div className="ml-3">
-              <span className="text-orange-600">Nhà Hàng Gì Cũng Được</span>
-              <p className="text-xs text-gray-500">Xin chào! 👋</p>
+              <span className="text-orange-600">Quản Lý Đặt Bàn</span>
+              <p className="text-xs text-gray-500">Xin chào!</p>
             </div>
           </div>
           <div className="flex gap-2">
