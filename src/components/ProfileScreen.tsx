@@ -1,11 +1,16 @@
-import { useState } from 'react';
-import { Button } from './ui/button';
 import { Card } from './ui/card';
+import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { motion } from 'motion/react';
-import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Clock, X, Edit, Palette } from 'lucide-react';
-import { bookings, areas, mockUser } from '../data/mockData';
+import { ArrowLeft, User, Calendar, MapPin, Clock, ChevronRight, LogOut, Edit, X, Mail, Phone } from 'lucide-react';
+import { useState } from 'react';
+import { Footer } from './Footer';
+import { mockUser, bookings as initialBookings } from '../data/mockData';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
+import { useNotification } from '../context/NotificationContext';
 
 interface ProfileScreenProps {
   onNavigate: (screen: string) => void;
@@ -13,6 +18,11 @@ interface ProfileScreenProps {
 
 export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
   const [activeTab, setActiveTab] = useState('bookings');
+  const [bookings, setBookings] = useState(initialBookings);
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [cancelReason, setCancelReason] = useState('');
+  const { showSuccess, showInfo } = useNotification();
 
   const confirmedBookings = bookings.filter(b => b.status === 'confirmed');
   const servedBookings = bookings.filter(b => b.status === 'served');
@@ -32,6 +42,11 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
   };
 
   const BookingCard = ({ booking }: { booking: any }) => {
+    // Format date and time: hh:mm dd/mm/yyyy
+    const formatDateTime = (dateStr: string, timeStr: string) => {
+      return `${timeStr} ${dateStr}`;
+    };
+
     return (
       <Card className="p-4 rounded-2xl mb-3">
         <div className="flex items-start justify-between mb-3">
@@ -42,16 +57,10 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
             </div>
             <div className="space-y-1.5 text-sm text-gray-600">
               <div className="flex items-center">
-                <MapPin className="w-4 h-4 mr-2 text-gray-400" />
                 {booking.area}
               </div>
               <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                {booking.date}
-              </div>
-              <div className="flex items-center">
-                <Clock className="w-4 h-4 mr-2 text-gray-400" />
-                {booking.time} ({booking.duration}h)
+                {formatDateTime(booking.date, booking.time)} ({booking.duration}h)
               </div>
             </div>
           </div>
@@ -60,8 +69,11 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
               variant="outline"
               size="sm"
               className="rounded-xl text-red-600 border-red-200 hover:bg-red-50"
+              onClick={() => {
+                setSelectedBooking(booking);
+                setIsCancelDialogOpen(true);
+              }}
             >
-              <X className="w-4 h-4 mr-1" />
               Hủy
             </Button>
           )}
@@ -73,6 +85,57 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
         )}
       </Card>
     );
+  };
+
+  const handleCancelBooking = () => {
+    if (!selectedBooking) return;
+    
+    if (!cancelReason.trim()) {
+      showInfo('Vui lòng nhập lý do hủy', 'Lý do hủy là bắt buộc');
+      return;
+    }
+
+    // Parse booking date and time
+    const bookingDateTime = new Date(`${selectedBooking.date}T${selectedBooking.time}`);
+    const now = new Date();
+    
+    // Calculate time difference in hours
+    const timeDiffMs = bookingDateTime.getTime() - now.getTime();
+    const timeDiffHours = timeDiffMs / (1000 * 60 * 60);
+    
+    // Check if cancellation is within 1 hour before booking time
+    const depositRefunded = timeDiffHours > 1;
+    
+    // Update booking
+    const updatedBookings = bookings.map(b => {
+      if (b.id === selectedBooking.id) {
+        return {
+          ...b,
+          status: 'cancelled' as const,
+          cancelReason: cancelReason.trim(),
+          cancelledAt: now.toISOString(),
+          depositRefunded: depositRefunded
+        };
+      }
+      return b;
+    });
+    
+    setBookings(updatedBookings);
+    setIsCancelDialogOpen(false);
+    setCancelReason('');
+    
+    // Show notification about deposit refund
+    if (depositRefunded) {
+      showSuccess(
+        'Đã hủy đặt bàn thành công',
+        'Tiền cọc sẽ được hoàn lại trong vòng 24h'
+      );
+    } else {
+      showInfo(
+        'Đã hủy đặt bàn',
+        '⚠️ Hủy trong vòng 1h trước giờ đặt - Không hoàn cọc'
+      );
+    }
   };
 
   return (
@@ -108,12 +171,10 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
               </div>
               <div className="flex-1">
                 <p className="text-white mb-1">{mockUser.name}</p>
-                <div className="flex items-center text-sm text-white/80 mb-1">
-                  <Mail className="w-4 h-4 mr-2" />
+                <div className="text-sm text-white/80 mb-1">
                   {mockUser.email}
                 </div>
-                <div className="flex items-center text-sm text-white/80">
-                  <Phone className="w-4 h-4 mr-2" />
+                <div className="text-sm text-white/80">
                   {mockUser.phone}
                 </div>
               </div>
@@ -222,16 +283,8 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-8 space-y-3"
+          className="mt-8"
         >
-          <Button
-            onClick={() => onNavigate('logo')}
-            variant="outline"
-            className="w-full h-12 rounded-2xl border-2 border-orange-200 text-orange-600 hover:bg-orange-50"
-          >
-            <Palette className="w-5 h-5 mr-2" />
-            Xem Logo & Brand
-          </Button>
           <Button
             onClick={() => onNavigate('login')}
             variant="outline"
@@ -241,6 +294,69 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
           </Button>
         </motion.div>
       </div>
+
+      {/* Footer */}
+      <Footer />
+
+      {/* Cancel Booking Dialog */}
+      <Dialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Hủy đặt bàn {selectedBooking?.tableCode}</DialogTitle>
+            <DialogDescription>
+              Vui lòng nhập lý do hủy đặt bàn. Nếu hủy trong vòng 1 giờ trước giờ đặt, tiền cọc sẽ không được hoàn lại.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="cancelReason" className="flex items-center gap-2">
+                <span className="text-red-500">*</span>
+                Lý do hủy (bắt buộc)
+              </Label>
+              <Textarea
+                id="cancelReason"
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Vui lòng nhập lý do hủy đặt bàn..."
+                className="min-h-[100px] rounded-2xl border-gray-200 resize-none"
+                maxLength={500}
+              />
+              <p className="text-xs text-gray-500">{cancelReason.length}/500 ký tự</p>
+            </div>
+            
+            {selectedBooking && (
+              <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
+                <p className="text-sm text-orange-800">
+                  <strong>Lưu ý:</strong> Thời gian đặt bàn: {selectedBooking.date} lúc {selectedBooking.time}
+                </p>
+                <p className="text-sm text-orange-700 mt-2">
+                  • Hủy trước 1h: Hoàn cọc 100%<br />
+                  • Hủy trong vòng 1h: Không hoàn cọc
+                </p>
+              </div>
+            )}
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsCancelDialogOpen(false);
+                setCancelReason('');
+              }}
+              className="flex-1 h-12 rounded-2xl"
+            >
+              Quay lại
+            </Button>
+            <Button
+              onClick={handleCancelBooking}
+              disabled={!cancelReason.trim()}
+              className="flex-1 h-12 bg-red-600 hover:bg-red-700 text-white rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Xác nhận hủy
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

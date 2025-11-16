@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -52,19 +51,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
-  const getIcon = (type: ToastType) => {
-    switch (type) {
-      case 'success':
-        return <CheckCircle2 className="w-5 h-5 text-green-600" />;
-      case 'error':
-        return <AlertCircle className="w-5 h-5 text-red-600" />;
-      case 'info':
-        return <Info className="w-5 h-5 text-blue-600" />;
-      case 'warning':
-        return <AlertCircle className="w-5 h-5 text-orange-600" />;
-    }
-  };
-
   const getStyles = (type: ToastType) => {
     switch (type) {
       case 'success':
@@ -93,22 +79,13 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
               exit={{ opacity: 0, x: 100 }}
               className={`${getStyles(toast.type)} border-2 rounded-2xl p-4 shadow-lg backdrop-blur-sm`}
             >
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 mt-0.5">
-                  {getIcon(toast.type)}
-                </div>
+              <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-gray-900 mb-0.5">{toast.title}</p>
                   {toast.message && (
                     <p className="text-sm text-gray-600">{toast.message}</p>
                   )}
                 </div>
-                <button
-                  onClick={() => removeToast(toast.id)}
-                  className="flex-shrink-0 p-1 hover:bg-white/50 rounded-lg transition-colors"
-                >
-                  <X className="w-4 h-4 text-gray-500" />
-                </button>
               </div>
             </motion.div>
           ))}

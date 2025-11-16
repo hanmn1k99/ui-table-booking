@@ -6,8 +6,9 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { motion } from 'motion/react';
-import { ArrowLeft, CreditCard, Wallet, QrCode, CheckCircle2, User, Phone, Calendar, Users, MapPin } from 'lucide-react';
+import { ArrowLeft, CreditCard, Wallet, QrCode, CheckCircle2, User, Phone, Calendar, Users, MapPin, Clock } from 'lucide-react';
 import { useNotification } from '../context/NotificationContext';
+import { Footer } from './Footer';
 
 interface PaymentScreenProps {
   onNavigate: (screen: string, data?: any) => void;
@@ -15,35 +16,25 @@ interface PaymentScreenProps {
 }
 
 export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('banking');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { showSuccess } = useNotification();
-  
-  // Customer info
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
 
   const depositAmount = 50000; // 50k VND deposit
 
   const handlePayment = () => {
-    if (!customerName || !customerPhone) {
-      return;
-    }
-    
     setIsProcessing(true);
     // Simulate payment processing
     setTimeout(() => {
       setIsProcessing(false);
       setIsSuccess(true);
-      showSuccess('Đặt bàn thành công!', `Bàn ${bookingData?.tableCode} đã được đặt cho ${customerName}`);
+      showSuccess('Đặt bàn thành công!', `Bàn ${bookingData?.tableCode} đã được đặt`);
       
       // Navigate to success screen after 1.5s
       setTimeout(() => {
         onNavigate('paymentSuccess', {
           ...bookingData,
-          customerName,
-          customerPhone,
           amount: depositAmount,
           paymentMethod
         });
@@ -93,45 +84,6 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-md mx-auto space-y-6"
         >
-          {/* Customer Information */}
-          <Card className="p-6 rounded-3xl shadow-sm">
-            <h3 className="text-gray-900 mb-4">Thông tin khách hàng</h3>
-            
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="customerName" className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-orange-500" />
-                  Họ và tên
-                </Label>
-                <Input
-                  id="customerName"
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Nguyễn Văn A"
-                  className="h-12 rounded-2xl border-gray-200"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="customerPhone" className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-orange-500" />
-                  Số điện thoại
-                </Label>
-                <Input
-                  id="customerPhone"
-                  type="tel"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="0912345678"
-                  className="h-12 rounded-2xl border-gray-200"
-                  required
-                />
-              </div>
-            </div>
-          </Card>
-
           {/* Booking Summary */}
           <Card className="p-6 rounded-3xl shadow-lg bg-gradient-to-br from-orange-50 to-white border-orange-100">
             <div className="flex items-center justify-between mb-4">
@@ -141,51 +93,58 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
               </Badge>
             </div>
             
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Mã bàn
-                </span>
-                <span className="text-gray-900">{bookingData?.tableCode}</span>
+            {/* Grid Layout */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="p-3 bg-white rounded-2xl">
+                <div className="flex items-center gap-2 mb-1">
+                  <MapPin className="w-4 h-4 text-orange-500" />
+                  <p className="text-xs text-gray-600">Mã bàn</p>
+                </div>
+                <p className="text-gray-900">{bookingData?.tableCode}</p>
               </div>
               
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Khu vực
-                </span>
-                <span className="text-gray-900">{bookingData?.area}</span>
+              <div className="p-3 bg-white rounded-2xl">
+                <div className="flex items-center gap-2 mb-1">
+                  <MapPin className="w-4 h-4 text-orange-500" />
+                  <p className="text-xs text-gray-600">Khu vực</p>
+                </div>
+                <p className="text-gray-900">{bookingData?.area}</p>
               </div>
               
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600 flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Ngày giờ đặt
-                </span>
-                <span className="text-gray-900">{bookingData?.date} - {bookingData?.time}</span>
+              <div className="p-3 bg-white rounded-2xl">
+                <div className="flex items-center gap-2 mb-1">
+                  <Calendar className="w-4 h-4 text-orange-500" />
+                  <p className="text-xs text-gray-600">Ngày đặt</p>
+                </div>
+                <p className="text-gray-900">{bookingData?.date}</p>
               </div>
               
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600 flex items-center gap-2">
-                  <Users className="w-4 h-4" />
-                  Số lượng khách
-                </span>
-                <span className="text-gray-900">{bookingData?.guests} người</span>
+              <div className="p-3 bg-white rounded-2xl">
+                <div className="flex items-center gap-2 mb-1">
+                  <Clock className="w-4 h-4 text-orange-500" />
+                  <p className="text-xs text-gray-600">Giờ đặt</p>
+                </div>
+                <p className="text-gray-900">{bookingData?.time}</p>
               </div>
               
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Loại bàn</span>
-                <span className="text-gray-900">{bookingData?.capacity} chỗ ngồi</span>
+              <div className="p-3 bg-white rounded-2xl">
+                <div className="flex items-center gap-2 mb-1">
+                  <Users className="w-4 h-4 text-orange-500" />
+                  <p className="text-xs text-gray-600">Số khách</p>
+                </div>
+                <p className="text-gray-900">{bookingData?.guests} người</p>
               </div>
               
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Thời gian</span>
-                <span className="text-gray-900">{bookingData?.duration} giờ</span>
+              <div className="p-3 bg-white rounded-2xl">
+                <div className="flex items-center gap-2 mb-1">
+                  <Users className="w-4 h-4 text-orange-500" />
+                  <p className="text-xs text-gray-600">Thời gian</p>
+                </div>
+                <p className="text-gray-900">{bookingData?.duration} giờ</p>
               </div>
             </div>
             
-            <div className="pt-4 mt-4 border-t border-orange-200">
+            <div className="pt-4 border-t border-orange-200">
               <div className="flex items-center justify-between">
                 <span className="text-gray-900">Tiền đặt cọc</span>
                 <span className="text-orange-600">
@@ -198,150 +157,29 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
           {/* Payment Method */}
           <div>
             <h3 className="text-gray-900 mb-4">Phương thức thanh toán</h3>
-            <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <Card
-                  className={`p-4 rounded-2xl cursor-pointer transition-all border-2 mb-3 ${
-                    paymentMethod === 'card'
-                      ? 'border-orange-500 bg-orange-50'
-                      : 'border-gray-200 hover:border-orange-300'
-                  }`}
-                  onClick={() => setPaymentMethod('card')}
-                >
-                  <div className="flex items-center">
-                    <RadioGroupItem value="card" id="card" className="mr-3" />
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mr-3">
-                      <CreditCard className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <Label htmlFor="card" className="cursor-pointer">
-                        Thẻ tín dụng/ghi nợ
-                      </Label>
-                      <p className="text-xs text-gray-500">Visa, Mastercard, JCB</p>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Card
-                  className={`p-4 rounded-2xl cursor-pointer transition-all border-2 mb-3 ${
-                    paymentMethod === 'momo'
-                      ? 'border-orange-500 bg-orange-50'
-                      : 'border-gray-200 hover:border-orange-300'
-                  }`}
-                  onClick={() => setPaymentMethod('momo')}
-                >
-                  <div className="flex items-center">
-                    <RadioGroupItem value="momo" id="momo" className="mr-3" />
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center mr-3">
-                      <Wallet className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <Label htmlFor="momo" className="cursor-pointer">
-                        Ví MoMo
-                      </Label>
-                      <p className="text-xs text-gray-500">Thanh toán qua ví điện tử</p>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Card
-                  className={`p-4 rounded-2xl cursor-pointer transition-all border-2 ${
-                    paymentMethod === 'banking'
-                      ? 'border-orange-500 bg-orange-50'
-                      : 'border-gray-200 hover:border-orange-300'
-                  }`}
-                  onClick={() => setPaymentMethod('banking')}
-                >
-                  <div className="flex items-center">
-                    <RadioGroupItem value="banking" id="banking" className="mr-3" />
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mr-3">
-                      <QrCode className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <Label htmlFor="banking" className="cursor-pointer">
-                        Chuyển khoản ngân hàng
-                      </Label>
-                      <p className="text-xs text-gray-500">QR Banking, Internet Banking</p>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            </RadioGroup>
-          </div>
-
-          {/* Card Details (show only if card is selected) */}
-          {paymentMethod === 'card' && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
             >
-              <div className="space-y-2">
-                <Label htmlFor="cardNumber">Số thẻ</Label>
-                <Input
-                  id="cardNumber"
-                  type="text"
-                  placeholder="1234 5678 9012 3456"
-                  className="h-12 rounded-2xl border-gray-200"
-                  maxLength={19}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="expiry">Ngày hết hạn</Label>
-                  <Input
-                    id="expiry"
-                    type="text"
-                    placeholder="MM/YY"
-                    className="h-12 rounded-2xl border-gray-200"
-                    maxLength={5}
-                  />
+              <Card className="p-4 rounded-2xl border-2 border-orange-500 bg-orange-50">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mr-3">
+                    <QrCode className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-gray-900">Chuyển khoản ngân hàng</p>
+                    <p className="text-xs text-gray-500">QR Banking, Internet Banking</p>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cvv">CVV</Label>
-                  <Input
-                    id="cvv"
-                    type="text"
-                    placeholder="123"
-                    className="h-12 rounded-2xl border-gray-200"
-                    maxLength={3}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="cardName">Tên trên thẻ</Label>
-                <Input
-                  id="cardName"
-                  type="text"
-                  placeholder="NGUYEN VAN A"
-                  className="h-12 rounded-2xl border-gray-200"
-                />
-              </div>
+              </Card>
             </motion.div>
-          )}
+          </div>
 
           {/* Payment Button */}
           <Button
             onClick={handlePayment}
-            disabled={isProcessing || !customerName || !customerPhone}
+            disabled={isProcessing}
             className="w-full h-14 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl shadow-lg shadow-orange-200 disabled:opacity-50"
           >
             {isProcessing ? (
@@ -371,6 +209,11 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
             </div>
           </Card>
         </motion.div>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-white px-6 py-4">
+        <Footer />
       </div>
     </div>
   );

@@ -1,11 +1,12 @@
 import { useState, useRef } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
 import { motion } from 'motion/react';
-import { Search, Calendar, Users, MapPin, Bell, User, Clock } from 'lucide-react';
-import { tables, areas, bookings } from '../data/mockData';
+import { Calendar, History, User, LogOut, Users, Clock, Bell, MapPin, Search } from 'lucide-react';
+import { Footer } from './Footer';
+import { tables } from '../data/mockData';
 import { NotificationPopup } from './NotificationPopup';
 
 interface HomeScreenProps {
@@ -58,7 +59,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               <span className="text-2xl">🍽️</span>
             </div>
             <div className="ml-3">
-              <span className="text-orange-600">Nhà Hàng Gì Cũng Được</span>
+              <span className="text-orange-600">Quản Lý Đặt Bàn</span>
               <p className="text-xs text-gray-500">Xin chào! 👋</p>
             </div>
           </div>
@@ -78,16 +79,6 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               <User className="w-5 h-5 text-orange-600" />
             </button>
           </div>
-        </div>
-
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <Input
-            type="text"
-            placeholder="Tìm bàn trống theo ngày/giờ..."
-            className="h-12 pl-12 pr-4 rounded-2xl border-gray-200 bg-gray-50"
-          />
         </div>
       </div>
 
@@ -158,13 +149,6 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 ({filteredTables.length} bàn)
               </span>
             </p>
-            <button 
-              onClick={() => onNavigate('tableMap')}
-              className="text-sm text-orange-600 flex items-center gap-1"
-            >
-              <MapPin className="w-4 h-4" />
-              Xem sơ đồ
-            </button>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -176,10 +160,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 transition={{ delay: index * 0.05 }}
               >
                 <Card 
-                  className={`p-4 rounded-2xl border-2 transition-all hover:shadow-md ${
+                  className={`p-4 rounded-2xl border-2 transition-all ${
                     table.status === 'available' 
-                      ? 'bg-white hover:border-orange-300 cursor-pointer' 
-                      : 'bg-gray-50 opacity-75 cursor-not-allowed'
+                      ? 'bg-white hover:border-orange-300 hover:shadow-md cursor-pointer' 
+                      : 'bg-gray-50 opacity-75'
                   }`}
                   onClick={() => {
                     if (table.status === 'available') {
@@ -222,6 +206,9 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         onClose={() => setShowNotifications(false)}
         anchorRef={notificationButtonRef}
       />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

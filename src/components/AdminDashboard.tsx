@@ -1,17 +1,29 @@
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
 import { Card } from './ui/card';
+import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { motion } from 'motion/react';
-import { Plus, Trash2, User, Users, Bell } from 'lucide-react';
-import { areas, tables as initialTables } from '../data/mockData';
-import type { Table } from '../data/mockData';
+import { 
+  Calendar, Users, MapPin, Clock, Search, 
+  Menu, LogOut, Home, Settings, Bell, ChevronRight, User, Plus, Trash2, Phone, MessageSquare
+} from 'lucide-react';
+import { Input } from './ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Label } from './ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Calendar as CalendarComponent } from './ui/calendar';
+import { Textarea } from './ui/textarea';
+import { 
+  AlertDialog, AlertDialogAction, AlertDialogCancel, 
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter, 
+  AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger 
+} from './ui/alert-dialog';
+import { tables as initialTables, Table, areas, generateTimeSlots } from '../data/mockData';
+import { Footer } from './Footer';
 import { useNotification } from '../context/NotificationContext';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
 
 interface AdminDashboardProps {
   onNavigate: (screen: string) => void;
@@ -21,7 +33,22 @@ export function AdminDashboard({ onNavigate }: AdminDashboardProps) {
   const [tables, setTables] = useState<Table[]>(initialTables);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const { showSuccess, showInfo, showWarning } = useNotification();
+  const { showSuccess, showInfo } = useNotification();
+  
+  // Booking Dialog State
+  const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
+  const [selectedBookingTable, setSelectedBookingTable] = useState<Table | null>(null);
+  const [bookingData, setBookingData] = useState({
+    salutation: 'Anh',
+    customerName: '',
+    phoneNumber: '',
+    phoneValidationError: '',
+    date: new Date(),
+    time: '',
+    duration: 1,
+    guests: 2,
+    notes: ''
+  });
   
   const [newTable, setNewTable] = useState({
     code: '',
@@ -29,6 +56,8 @@ export function AdminDashboard({ onNavigate }: AdminDashboardProps) {
     area: 'floor1',
     status: 'available' as Table['status']
   });
+
+  const timeSlots = generateTimeSlots();
 
   // Mock notifications
   const notifications = [
@@ -115,6 +144,66 @@ export function AdminDashboard({ onNavigate }: AdminDashboardProps) {
     showSuccess('Xóa bàn thành công', `Bàn ${table?.code} đã được xóa khỏi hệ thống`);
   };
 
+  const handleToggleCleaningAvailable = (tableId: string, currentStatus: Table['status']) => {
+    let newStatus: Table['status'];
+    
+    if (currentStatus === 'cleaning') {
+      newStatus = 'available';
+    } else if (currentStatus === 'available') {
+      newStatus = 'cleaning';
+    } else {
+      // If current status is serving or booked, set to cleaning
+      newStatus = 'cleaning';
+    }
+    
+    handleChangeStatus(tableId, newStatus);
+  };
+
+  const handleOpenBooking = (table: Table) => {
+    setSelectedBookingTable(table);
+    setBookingData({
+      salutation: 'Anh',
+      customerName: '',
+      phoneNumber: '',
+      phoneValidationError: '',
+      date: new Date(),
+      time: '',
+      duration: 1,
+      guests: Math.min(2, table.capacity), // Mặc định 2 người hoặc ít hơn nếu bàn nhỏ
+      notes: ''
+    });
+    setIsBookingDialogOpen(true);
+  };
+
+  const handleConfirmBooking = () => {
+    if (!bookingData.customerName || !bookingData.phoneNumber || !bookingData.time) {
+      showInfo('Thông tin chưa đầy đủ', 'Vui lòng điền đầy đủ thông tin khách hàng và thời gian');
+      return;
+    }
+
+    // Validate số lượng khách không vượt quá sức chứa
+    if (selectedBookingTable && bookingData.guests > selectedBookingTable.capacity) {
+      showInfo(
+        'Vượt quá sức chứa', 
+        `Bàn ${selectedBookingTable.code} chỉ chứa tối đa ${selectedBookingTable.capacity} người`
+      );
+      return;
+    }
+
+    // Update table status to booked
+    setTables(tables.map(t => 
+      t.id === selectedBookingTable?.id ? { ...t, status: 'booked' as Table['status'] } : t
+    ));
+
+    showSuccess(
+      'Đặt bàn thành công',
+      `Bàn ${selectedBookingTable?.code} đã được đặt cho ${bookingData.salutation} ${bookingData.customerName}`
+    );
+
+    setIsBookingDialogOpen(false);
+    setSelectedBookingTable(null);
+  };
+
   const getAreaName = (areaId: string) => {
     return areas.find(a => a.id === areaId)?.name || areaId;
   };
@@ -184,9 +273,12 @@ export function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                 Thêm bàn
               </Button>
             </DialogTrigger>
-            <DialogContent className="rounded-3xl">
+            <DialogContent className="rounded-3xl" aria-describedby="add-table-description">
               <DialogHeader>
                 <DialogTitle>Thêm bàn mới</DialogTitle>
+                <DialogDescription>
+                  Điền thông tin để thêm bàn mới vào hệ thống
+                </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
@@ -290,50 +382,49 @@ export function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                   
                   {/* Status Change Buttons */}
                   <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                      {table.status !== 'available' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleChangeStatus(table.id, 'available')}
-                          className="text-xs rounded-xl"
-                        >
-                          Đặt trống
-                        </Button>
-                      )}
-                      {table.status !== 'serving' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleChangeStatus(table.id, 'serving')}
-                          className="text-xs rounded-xl"
-                        >
-                          Phục vụ
-                        </Button>
-                      )}
-                      {table.status !== 'booked' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleChangeStatus(table.id, 'booked')}
-                          className="text-xs rounded-xl"
-                        >
-                          Đã đặt
-                        </Button>
-                      )}
-                      {table.status !== 'cleaning' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleChangeStatus(table.id, 'cleaning')}
-                          className="text-xs rounded-xl"
-                        >
-                          Đang dọn
-                        </Button>
-                      )}
+                    {/* Đặt Bàn Button - Highlighted */}
+                    <Button
+                      size="sm"
+                      className="w-full text-sm uppercase rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md tracking-wide h-11"
+                      onClick={() => handleOpenBooking(table)}
+                    >
+                      Đặt Bàn
+                    </Button>
+                    
+                    {/* Status Buttons Row: Phục vụ, Đã đặt, Đang dọn/Đặt trống */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button
+                        size="sm"
+                        variant={table.status === 'serving' ? 'default' : 'outline'}
+                        onClick={() => handleChangeStatus(table.id, 'serving')}
+                        disabled={table.status === 'serving'}
+                        className={`text-xs rounded-xl ${table.status === 'serving' ? 'bg-blue-100 text-blue-700 border-blue-200 cursor-default' : ''}`}
+                      >
+                        Phục vụ
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={table.status === 'booked' ? 'default' : 'outline'}
+                        onClick={() => handleChangeStatus(table.id, 'booked')}
+                        disabled={table.status === 'booked'}
+                        className={`text-xs rounded-xl ${table.status === 'booked' ? 'bg-orange-100 text-orange-700 border-orange-200 cursor-default' : ''}`}
+                      >
+                        Đã đặt
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={table.status === 'cleaning' || table.status === 'available' ? 'default' : 'outline'}
+                        onClick={() => handleToggleCleaningAvailable(table.id, table.status)}
+                        className={`text-xs rounded-xl ${
+                          table.status === 'cleaning' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' : 
+                          table.status === 'available' ? 'bg-green-100 text-green-700 border-green-200' : ''
+                        }`}
+                      >
+                        {table.status === 'cleaning' ? 'Đặt trống' : table.status === 'available' ? 'Đang dọn' : 'Đang dọn'}
+                      </Button>
                     </div>
                     
-                    {/* Delete Button */}
+                    {/* Delete Button Row */}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
@@ -414,6 +505,218 @@ export function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           </div>
         </motion.div>
       )}
+
+      {/* Booking Dialog */}
+      <Dialog open={isBookingDialogOpen} onOpenChange={setIsBookingDialogOpen}>
+        <DialogContent className="rounded-3xl max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Đặt bàn cho {selectedBookingTable?.code}</DialogTitle>
+            <DialogDescription>
+              Điền thông tin khách hàng và thời gian đặt bàn
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {/* Customer Information */}
+            <div>
+              <h4 className="text-gray-900 mb-4">Thông tin khách hàng</h4>
+              <div className="space-y-4">
+                {/* Salutation and Name */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-orange-500" />
+                    Họ và tên
+                  </Label>
+                  <div className="flex gap-2">
+                    <Select value={bookingData.salutation} onValueChange={(value) => setBookingData({ ...bookingData, salutation: value })}>
+                      <SelectTrigger className="h-12 rounded-2xl border-gray-200 w-[100px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Anh">Anh</SelectItem>
+                        <SelectItem value="Chị">Chị</SelectItem>
+                        <SelectItem value="Ông">Ông</SelectItem>
+                        <SelectItem value="Bà">Bà</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      placeholder="Nhập tên"
+                      value={bookingData.customerName}
+                      onChange={(e) => setBookingData({ ...bookingData, customerName: e.target.value })}
+                      className="flex-1 h-12 rounded-2xl border-gray-200"
+                    />
+                  </div>
+                </div>
+
+                {/* Phone Number */}
+                <div className="space-y-2 relative">
+                  <Label className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-orange-500" />
+                    Số điện thoại
+                  </Label>
+                  <Input
+                    type="tel"
+                    placeholder="0912345678"
+                    value={bookingData.phoneNumber}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const newBookingData = { ...bookingData, phoneNumber: value };
+                      
+                      // Kiểm tra liên tục khi nhập
+                      if (!value) {
+                        newBookingData.phoneValidationError = '';
+                      } else if (!/^\d*$/.test(value)) {
+                        newBookingData.phoneValidationError = 'Chỉ được nhập số';
+                      } else if (!value.startsWith('0')) {
+                        newBookingData.phoneValidationError = 'Phải bắt đầu bằng số 0';
+                      } else if (value.length < 10) {
+                        newBookingData.phoneValidationError = 'Phải có ít nhất 10 số';
+                      } else {
+                        newBookingData.phoneValidationError = '';
+                      }
+                      
+                      setBookingData(newBookingData);
+                    }}
+                    className={`h-12 rounded-2xl border-gray-200 ${bookingData.phoneValidationError ? 'border-red-500' : ''}`}
+                    maxLength={11}
+                  />
+                  {bookingData.phoneValidationError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute left-0 right-0 mt-1 px-3 py-2 bg-red-50 border border-red-200 rounded-xl shadow-sm z-10"
+                    >
+                      <p className="text-xs text-red-600 flex items-center gap-1">
+                        <span>⚠️</span> {bookingData.phoneValidationError}
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Booking Time */}
+            <div>
+              <h4 className="text-gray-900 mb-4">Thời gian đặt bàn</h4>
+              <div className="space-y-4">
+                {/* Date */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-orange-500" />
+                    Ngày đặt
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full h-12 rounded-2xl border-gray-200 justify-start">
+                        {format(bookingData.date, 'dd/MM/yyyy', { locale: vi })}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 rounded-2xl" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={bookingData.date}
+                        onSelect={(date) => date && setBookingData({ ...bookingData, date })}
+                        initialFocus
+                        locale={vi}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {/* Time */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-orange-500" />
+                    Giờ đặt
+                  </Label>
+                  <Select value={bookingData.time} onValueChange={(value) => setBookingData({ ...bookingData, time: value })}>
+                    <SelectTrigger className="h-12 rounded-2xl border-gray-200">
+                      <SelectValue placeholder="Chọn giờ" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {timeSlots.map((slot) => (
+                        <SelectItem key={slot} value={slot}>
+                          {slot}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Duration and Guests */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Thời gian (giờ)</Label>
+                    <Select value={String(bookingData.duration)} onValueChange={(value) => setBookingData({ ...bookingData, duration: Number(value) })}>
+                      <SelectTrigger className="h-12 rounded-2xl border-gray-200">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1 giờ</SelectItem>
+                        <SelectItem value="2">2 giờ</SelectItem>
+                        <SelectItem value="3">3 giờ</SelectItem>
+                        <SelectItem value="4">4 giờ</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-orange-500" />
+                      Số người
+                    </Label>
+                    <Select value={String(bookingData.guests)} onValueChange={(value) => setBookingData({ ...bookingData, guests: Number(value) })}>
+                      <SelectTrigger className="h-12 rounded-2xl border-gray-200">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: selectedBookingTable?.capacity || 2 }, (_, i) => i + 1).map((num) => (
+                          <SelectItem key={num} value={String(num)}>
+                            {num} người
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-orange-500" />
+                Ghi chú
+              </Label>
+              <Textarea
+                placeholder="Ghi chú thêm (nếu có)"
+                value={bookingData.notes}
+                onChange={(e) => setBookingData({ ...bookingData, notes: e.target.value })}
+                className="min-h-[100px] rounded-2xl border-gray-200 resize-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsBookingDialogOpen(false)}
+              className="flex-1 h-12 rounded-2xl"
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={handleConfirmBooking}
+              className="flex-1 h-12 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl"
+            >
+              Xác nhận đặt bàn
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

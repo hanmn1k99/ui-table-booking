@@ -36,7 +36,7 @@ export default function App() {
   // Set favicon and title on mount
   useEffect(() => {
     setFavicon();
-    setDocumentTitle('Nhà Hàng Gì Cũng Được - Đặt bàn nhanh chóng');
+    setDocumentTitle('Quản Lý Đặt Bàn - Dễ dàng & Nhanh chóng');
   }, []);
 
   const handleNavigate = (screen: Screen, data?: any) => {

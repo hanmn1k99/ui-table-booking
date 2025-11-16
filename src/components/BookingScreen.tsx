@@ -4,10 +4,17 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Calendar as CalendarComponent } from './ui/calendar';
 import { motion } from 'motion/react';
-import { ArrowLeft, Users, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, Users, Calendar, Clock, MessageSquare, User, Phone } from 'lucide-react';
 import { tables, areas, generateTimeSlots } from '../data/mockData';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import { Footer } from './Footer';
+import { useNotification } from '../context/NotificationContext';
 
 interface BookingScreenProps {
   onNavigate: (screen: string, data?: any) => void;
@@ -16,32 +23,53 @@ interface BookingScreenProps {
 
 export function BookingScreen({ onNavigate, initialData }: BookingScreenProps) {
   const [selectedTableId, setSelectedTableId] = useState(initialData?.tableId || '');
-  const [selectedDate, setSelectedDate] = useState(getTodayDate());
+  const [date, setDate] = useState<Date>(new Date());
   const [selectedTime, setSelectedTime] = useState('');
   const [duration, setDuration] = useState(1); // Default 1 hour
   const [guests, setGuests] = useState(2);
+  const [notes, setNotes] = useState('');
+  
+  // Customer info
+  const [salutation, setSalutation] = useState('Anh');
+  const [customerName, setCustomerName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneValidationError, setPhoneValidationError] = useState('');
+  
+  const { showInfo } = useNotification();
 
   const availableTables = tables.filter(t => t.status === 'available');
   const selectedTable = tables.find(t => t.id === selectedTableId);
   const timeSlots = generateTimeSlots();
-
-  function getTodayDate() {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  }
-
-  function getMinDate() {
-    return getTodayDate();
-  }
-
-  function getMaxDate() {
-    const maxDate = new Date();
-    maxDate.setDate(maxDate.getDate() + 30); // Allow booking up to 30 days ahead
-    return maxDate.toISOString().split('T')[0];
-  }
+  
+  // Update guests when table is selected
+  const handleTableSelect = (tableId: string) => {
+    setSelectedTableId(tableId);
+    const table = tables.find(t => t.id === tableId);
+    if (table) {
+      // Set guests to default 2 or table capacity, whichever is smaller
+      setGuests(Math.min(2, table.capacity));
+    }
+  };
 
   const handleConfirm = () => {
-    if (!selectedTableId || !selectedDate || !selectedTime) return;
+    if (!selectedTableId || !date || !selectedTime) {
+      showInfo('Thông tin chưa đầy đủ', 'Vui lòng điền đầy đủ thông tin và chọn bàn');
+      return;
+    }
+
+    if (!customerName || !phoneNumber) {
+      showInfo('Thông tin chưa đầy đủ', 'Vui lòng điền họ tên và số điện thoại');
+      return;
+    }
+
+    // Validate số lượng khách không vượt quá sức chứa
+    if (selectedTable && guests > selectedTable.capacity) {
+      showInfo(
+        'Vượt quá sức chứa', 
+        `Bàn ${selectedTable.code} chỉ chứa tối đa ${selectedTable.capacity} người`
+      );
+      return;
+    }
     
     const areaName = areas.find(a => a.id === selectedTable?.area)?.name || selectedTable?.area || '';
     
@@ -50,10 +78,14 @@ export function BookingScreen({ onNavigate, initialData }: BookingScreenProps) {
       tableCode: selectedTable?.code,
       capacity: selectedTable?.capacity,
       area: areaName,
-      date: selectedDate,
+      date: format(date, 'dd/MM/yyyy', { locale: vi }),
       time: selectedTime,
       duration,
-      guests
+      guests,
+      notes,
+      salutation,
+      customerName,
+      phoneNumber
     };
     onNavigate('confirmation', bookingData);
   };
@@ -81,81 +113,214 @@ export function BookingScreen({ onNavigate, initialData }: BookingScreenProps) {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6 max-w-2xl mx-auto"
         >
-          {/* Date and Time Selection */}
+          {/* Customer Information and Time Selection - 2 Column Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Customer Information */}
+            <Card className="p-6 rounded-3xl shadow-sm">
+              <h3 className="text-gray-900 mb-4">Thông tin khách hàng</h3>
+              
+              <div className="space-y-4">
+                {/* Salutation and Name - Same Row */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-orange-500" />
+                    Họ và tên
+                  </Label>
+                  <div className="flex gap-2">
+                    <Select value={salutation} onValueChange={setSalutation}>
+                      <SelectTrigger className="h-12 rounded-2xl border-gray-200 w-[100px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Anh">Anh</SelectItem>
+                        <SelectItem value="Chị">Chị</SelectItem>
+                        <SelectItem value="Ông">Ông</SelectItem>
+                        <SelectItem value="Bà">Bà</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      id="customerName"
+                      type="text"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder="Nhập tên"
+                      className="h-12 rounded-2xl border-gray-200 flex-1"
+                    />
+                  </div>
+                </div>
+
+                {/* Phone Number */}
+                <div className="space-y-2 relative">
+                  <Label htmlFor="phoneNumber" className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-orange-500" />
+                    Số điện thoại
+                  </Label>
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setPhoneNumber(value);
+                      
+                      // Kiểm tra liên tục khi nhập
+                      if (!value) {
+                        setPhoneValidationError('');
+                      } else if (!/^\d*$/.test(value)) {
+                        setPhoneValidationError('Chỉ được nhập số');
+                      } else if (!value.startsWith('0')) {
+                        setPhoneValidationError('Phải bắt đầu bằng số 0');
+                      } else if (value.length < 10) {
+                        setPhoneValidationError('Phải có ít nhất 10 số');
+                      } else {
+                        setPhoneValidationError('');
+                      }
+                    }}
+                    placeholder="0912345678"
+                    className={`h-12 rounded-2xl border-gray-200 ${phoneValidationError ? 'border-red-500' : ''}`}
+                    maxLength={11}
+                  />
+                  {phoneValidationError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute left-0 right-0 mt-1 px-3 py-2 bg-red-50 border border-red-200 rounded-xl shadow-sm z-10"
+                    >
+                      <p className="text-xs text-red-600 flex items-center gap-1">
+                        <span>⚠️</span> {phoneValidationError}
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Guests */}
+                <div className="space-y-2">
+                  <Label htmlFor="guests" className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-orange-500" />
+                    Số lượng khách
+                  </Label>
+                  <Select 
+                    value={String(guests)} 
+                    onValueChange={(value) => setGuests(Number(value))}
+                    disabled={!selectedTable}
+                  >
+                    <SelectTrigger className="h-12 rounded-2xl border-gray-200">
+                      <SelectValue placeholder={selectedTable ? "Chọn số người" : "Chọn bàn trước"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {selectedTable ? (
+                        Array.from({ length: selectedTable.capacity }, (_, i) => i + 1).map((num) => (
+                          <SelectItem key={num} value={String(num)}>
+                            {num} người
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="0" disabled>
+                          Vui lòng chọn bàn trước
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {selectedTable && (
+                    <p className="text-xs text-gray-500">Tối đa {selectedTable.capacity} người</p>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            {/* Date and Time Selection */}
+            <Card className="p-6 rounded-3xl shadow-sm">
+              <h3 className="text-gray-900 mb-4">Thời gian đặt bàn</h3>
+              
+              <div className="space-y-4">
+                {/* Date */}
+                <div className="space-y-2">
+                  <Label htmlFor="date" className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-orange-500" />
+                    Ngày đặt
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full h-12 rounded-2xl border-2 border-orange-200 bg-orange-50 hover:bg-orange-100 hover:border-orange-300 text-gray-900 justify-start font-normal"
+                      >
+                        <Calendar className="w-5 h-5 mr-3 text-orange-500" />
+                        {format(date, 'EEEE, dd MMMM yyyy', { locale: vi })}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={date}
+                        onSelect={(date) => date && setDate(date)}
+                        disabled={(date) => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          const maxDate = new Date();
+                          maxDate.setDate(maxDate.getDate() + 30);
+                          return date < today || date > maxDate;
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {/* Time */}
+                <div className="space-y-2">
+                  <Label htmlFor="time" className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-orange-500" />
+                    Giờ đặt (9:00 - 21:00)
+                  </Label>
+                  <Select value={selectedTime} onValueChange={setSelectedTime}>
+                    <SelectTrigger className="h-12 rounded-2xl border-gray-200">
+                      <SelectValue placeholder="Chọn giờ" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {timeSlots.map(slot => (
+                        <SelectItem key={slot} value={slot}>
+                          {slot}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Duration */}
+                <div className="space-y-2">
+                  <Label htmlFor="duration">Thời gian (giờ)</Label>
+                  <Select value={duration.toString()} onValueChange={(v) => setDuration(Number(v))}>
+                    <SelectTrigger className="h-12 rounded-2xl border-gray-200">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 giờ</SelectItem>
+                      <SelectItem value="1.5">1.5 giờ</SelectItem>
+                      <SelectItem value="2">2 giờ</SelectItem>
+                      <SelectItem value="2.5">2.5 giờ</SelectItem>
+                      <SelectItem value="3">3 giờ</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Notes */}
           <Card className="p-6 rounded-3xl shadow-sm">
-            <h3 className="text-gray-900 mb-4">Thời gian đặt bàn</h3>
-            
-            <div className="space-y-4">
-              {/* Date */}
-              <div className="space-y-2">
-                <Label htmlFor="date" className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-orange-500" />
-                  Ngày đặt
-                </Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  min={getMinDate()}
-                  max={getMaxDate()}
-                  className="h-12 rounded-2xl border-gray-200"
-                />
-              </div>
-
-              {/* Time */}
-              <div className="space-y-2">
-                <Label htmlFor="time" className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-orange-500" />
-                  Giờ đặt (9:00 - 21:00)
-                </Label>
-                <Select value={selectedTime} onValueChange={setSelectedTime}>
-                  <SelectTrigger className="h-12 rounded-2xl border-gray-200">
-                    <SelectValue placeholder="Chọn giờ" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeSlots.map(slot => (
-                      <SelectItem key={slot} value={slot}>
-                        {slot}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Duration */}
-              <div className="space-y-2">
-                <Label htmlFor="duration">Thời gian (giờ)</Label>
-                <Select value={duration.toString()} onValueChange={(v) => setDuration(Number(v))}>
-                  <SelectTrigger className="h-12 rounded-2xl border-gray-200">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 giờ</SelectItem>
-                    <SelectItem value="1.5">1.5 giờ</SelectItem>
-                    <SelectItem value="2">2 giờ</SelectItem>
-                    <SelectItem value="2.5">2.5 giờ</SelectItem>
-                    <SelectItem value="3">3 giờ</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Guests */}
-              <div className="space-y-2">
-                <Label htmlFor="guests" className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-orange-500" />
-                  Số lượng khách
-                </Label>
-                <Input
-                  id="guests"
-                  type="number"
-                  value={guests}
-                  onChange={(e) => setGuests(Number(e.target.value))}
-                  min={1}
-                  max={20}
-                  className="h-12 rounded-2xl border-gray-200"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes" className="flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-orange-500" />
+                Ghi chú
+              </Label>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Yêu cầu đặc biệt (nếu có)"
+                className="h-24 rounded-2xl border-gray-200"
+              />
             </div>
           </Card>
 
@@ -185,7 +350,7 @@ export function BookingScreen({ onNavigate, initialData }: BookingScreenProps) {
                       transition={{ delay: index * 0.05 }}
                     >
                       <Card
-                        onClick={() => setSelectedTableId(table.id)}
+                        onClick={() => handleTableSelect(table.id)}
                         className={`p-4 rounded-2xl cursor-pointer transition-all border-2 ${
                           selectedTableId === table.id
                             ? 'border-orange-500 bg-orange-50 shadow-md'
@@ -219,12 +384,17 @@ export function BookingScreen({ onNavigate, initialData }: BookingScreenProps) {
 
           <Button
             onClick={handleConfirm}
-            disabled={!selectedTableId || !selectedDate || !selectedTime}
+            disabled={!selectedTableId || !date || !selectedTime}
             className="w-full h-12 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Xác nhận đặt bàn
           </Button>
         </motion.div>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-white shadow-sm px-6 py-4">
+        <Footer />
       </div>
     </div>
   );

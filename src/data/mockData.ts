@@ -24,6 +24,9 @@ export interface Booking {
   note?: string;
   status: 'confirmed' | 'cancelled' | 'served'; // Changed 'completed' to 'served' (Đã được phục vụ)
   qrCode?: string;
+  cancelReason?: string; // Lý do hủy
+  cancelledAt?: string; // Thời gian hủy
+  depositRefunded?: boolean; // Có hoàn cọc không
 }
 
 export interface User {

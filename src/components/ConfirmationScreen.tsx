@@ -2,7 +2,8 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { motion } from 'motion/react';
-import { CheckCircle, Users, CreditCard, Home, ArrowLeft, Calendar, Clock, MapPin } from 'lucide-react';
+import { CheckCircle, Users, CreditCard, Home, ArrowLeft, Calendar, Clock, MapPin, MessageSquare } from 'lucide-react';
+import { Footer } from './Footer';
 
 interface ConfirmationScreenProps {
   onNavigate: (screen: string) => void;
@@ -61,6 +62,28 @@ export function ConfirmationScreen({ onNavigate, bookingData }: ConfirmationScre
             </div>
 
             <div className="space-y-4">
+              {/* Customer Info */}
+              {bookingData?.customerName && (
+                <div className="pb-4 border-b border-gray-100 space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Khách hàng</p>
+                    <p className="text-gray-900">{bookingData?.salutation} {bookingData?.customerName}</p>
+                  </div>
+                  {bookingData?.phoneNumber && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Điện thoại</p>
+                      <p className="text-gray-900">{bookingData?.phoneNumber}</p>
+                    </div>
+                  )}
+                  {bookingData?.notes && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Ghi chú</p>
+                      <p className="text-gray-900">{bookingData?.notes}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Mã bàn</p>
@@ -153,6 +176,11 @@ export function ConfirmationScreen({ onNavigate, bookingData }: ConfirmationScre
             </p>
           </Card>
         </motion.div>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-white shadow-sm px-6 py-4">
+        <Footer />
       </div>
     </div>
   );
