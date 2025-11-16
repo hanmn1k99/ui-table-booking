@@ -109,7 +109,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.font = `bold ${height * 0.2}px Arial, sans-serif`;
-    ctx.fillText('Quản Lý Đặt Bàn', textX, textY);
+    ctx.fillText('Nhà Hàng Gì Cũng Được', textX, textY);
 
     // Download
     canvas.toBlob((blob) => {
@@ -161,7 +161,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
     ctx.fillStyle = '#ea580c';
     ctx.textAlign = 'center';
     ctx.font = `bold ${height * 0.08}px Arial, sans-serif`;
-    ctx.fillText('Quản Lý Đặt Bàn', width / 2, iconY + iconSize + height * 0.1);
+    ctx.fillText('Nhà Hàng Gì Cũng Được', width / 2, iconY + iconSize + height * 0.1);
 
     // Add tagline
     ctx.fillStyle = '#6b7280';
@@ -214,7 +214,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
               <div className="w-40 h-40 bg-gradient-to-br from-orange-500 to-orange-600 rounded-[40px] flex items-center justify-center shadow-2xl mb-6">
                 <span className="text-8xl">🍽️</span>
               </div>
-              <h2 className="text-orange-600 mb-2">Quản Lý Đặt Bàn</h2>
+              <h2 className="text-orange-600 mb-2">Nhà Hàng Gì Cũng Được</h2>
               <p className="text-gray-600">Đặt bàn nhanh – Ăn ngon trọn vị</p>
             </div>
           </div>
@@ -261,8 +261,8 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
                   <span className="text-5xl">🍽️</span>
                 </div>
                 <div className="text-left">
-                  <p className="text-orange-600">Phần Mềm</p>
-                  <p className="text-orange-600">Quản Lý Đặt Bàn</p>
+                  <p className="text-orange-600">Nhà Hàng</p>
+                  <p className="text-orange-600">Gì Cũng Được</p>
                 </div>
               </div>
             </div>
@@ -286,7 +286,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-[16px] flex items-center justify-center shadow-lg">
                   <span className="text-4xl">🍽️</span>
                 </div>
-                <span className="text-white">Quản Lý Đặt Bàn</span>
+                <span className="text-white">Nhà Hàng Gì Cũng Được</span>
               </div>
             </div>
           </Card>
@@ -329,7 +329,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
                   <span className="text-6xl">🍽️</span>
                 </div>
                 <div>
-                  <h2 className="text-orange-600">Quản Lý Đặt Bàn</h2>
+                  <h2 className="text-orange-600">Nhà Hàng Gì Cũng Được</h2>
                   <p className="text-sm text-gray-600">Đặt bàn nhanh – Ăn ngon trọn vị</p>
                 </div>
               </div>
@@ -341,7 +341,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-[16px] flex items-center justify-center shadow-lg">
                   <span className="text-4xl">🍽️</span>
                 </div>
-                <span className="text-orange-600">Quản Lý Đặt Bàn</span>
+                <span className="text-orange-600">Nhà Hàng Gì Cũng Được</span>
               </div>
             </div>
 
@@ -351,7 +351,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
                 <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
                   <span className="text-3xl">🍽️</span>
                 </div>
-                <span className="text-orange-600">Quản Lý Đặt Bàn</span>
+                <span className="text-orange-600">Nhà Hàng Gì Cũng Được</span>
               </div>
             </div>
 
@@ -361,7 +361,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
                 <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
                   <span className="text-2xl">🍽️</span>
                 </div>
-                <span className="text-sm text-orange-600">Quản Lý Đặt Bàn</span>
+                <span className="text-sm text-orange-600">Nhà Hàng Gì Cũng Được</span>
               </div>
             </div>
           </div>

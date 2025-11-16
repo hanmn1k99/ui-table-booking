@@ -15,15 +15,15 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
   const [activeTab, setActiveTab] = useState('bookings');
 
   const confirmedBookings = bookings.filter(b => b.status === 'confirmed');
-  const completedBookings = bookings.filter(b => b.status === 'completed');
+  const servedBookings = bookings.filter(b => b.status === 'served');
   const cancelledBookings = bookings.filter(b => b.status === 'cancelled');
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'confirmed':
         return <Badge className="bg-green-100 text-green-700 border-green-200">Đã xác nhận</Badge>;
-      case 'completed':
-        return <Badge className="bg-blue-100 text-blue-700 border-blue-200">Hoàn tất</Badge>;
+      case 'served':
+        return <Badge className="bg-blue-100 text-blue-700 border-blue-200">Đã được phục vụ</Badge>;
       case 'cancelled':
         return <Badge className="bg-red-100 text-red-700 border-red-200">Đã hủy</Badge>;
       default:
@@ -32,28 +32,26 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
   };
 
   const BookingCard = ({ booking }: { booking: any }) => {
-    const areaName = areas.find(a => a.id === booking.area)?.name;
-    
     return (
       <Card className="p-4 rounded-2xl mb-3">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <p className="text-gray-900">Bàn {booking.tableNumber}</p>
+              <p className="text-gray-900">Mã bàn: {booking.tableCode}</p>
               {getStatusBadge(booking.status)}
             </div>
             <div className="space-y-1.5 text-sm text-gray-600">
+              <div className="flex items-center">
+                <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                {booking.area}
+              </div>
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-2 text-gray-400" />
                 {booking.date}
               </div>
               <div className="flex items-center">
                 <Clock className="w-4 h-4 mr-2 text-gray-400" />
-                {booking.time}
-              </div>
-              <div className="flex items-center">
-                <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-                {areaName}
+                {booking.time} ({booking.duration}h)
               </div>
             </div>
           </div>
@@ -135,7 +133,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
             <p className="text-xs text-gray-600">Đã đặt</p>
           </Card>
           <Card className="p-4 rounded-2xl text-center">
-            <p className="text-blue-600 mb-1">{completedBookings.length}</p>
+            <p className="text-blue-600 mb-1">{servedBookings.length}</p>
             <p className="text-xs text-gray-600">Hoàn tất</p>
           </Card>
           <Card className="p-4 rounded-2xl text-center">
@@ -194,8 +192,8 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
             </TabsContent>
 
             <TabsContent value="completed" className="mt-6">
-              {completedBookings.length > 0 ? (
-                completedBookings.map(booking => (
+              {servedBookings.length > 0 ? (
+                servedBookings.map(booking => (
                   <BookingCard key={booking.id} booking={booking} />
                 ))
               ) : (

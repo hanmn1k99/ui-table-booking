@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Users, UserCog } from 'lucide-react';
 
 interface LoginScreenProps {
-  onLogin: (role: 'customer' | 'admin') => void;
+  onLogin: (role: 'guest' | 'staff') => void;
 }
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
@@ -14,7 +14,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
         <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
           <span className="text-2xl">🍽️</span>
         </div>
-        <span className="ml-3 text-orange-600">Quản Lý Đặt Bàn</span>
+        <span className="ml-3 text-orange-600">Nhà Hàng Gì Cũng Được</span>
       </div>
 
       {/* Content */}
@@ -26,7 +26,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           className="max-w-md w-full"
         >
           <div className="text-center mb-12">
-            <h1 className="text-gray-900 mb-2">Kính Chào Quý Khách</h1>
+            <h1 className="text-gray-900 mb-2">Chào mừng đến Nhà Hàng Gì Cũng Được</h1>
             <p className="text-gray-600">
               Chọn vai trò để tiếp tục
             </p>
@@ -39,7 +39,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               transition={{ delay: 0.2 }}
             >
               <Button
-                onClick={() => onLogin('customer')}
+                onClick={() => onLogin('guest')}
                 className="w-full h-20 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl shadow-lg shadow-orange-200 flex items-center justify-start px-8"
               >
                 <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4">
@@ -58,7 +58,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               transition={{ delay: 0.3 }}
             >
               <Button
-                onClick={() => onLogin('admin')}
+                onClick={() => onLogin('staff')}
                 variant="outline"
                 className="w-full h-20 rounded-2xl border-2 border-orange-200 hover:bg-orange-50 flex items-center justify-start px-8"
               >

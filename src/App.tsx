@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SplashScreen } from './components/SplashScreen';
 import { LoginScreen } from './components/LoginScreen';
 import { HomeScreen } from './components/HomeScreen';
@@ -11,6 +11,8 @@ import { TableMapScreen } from './components/TableMapScreen';
 import { AdminDashboard } from './components/AdminDashboard';
 import { LogoPage } from './components/LogoPage';
 import { NotificationScreen } from './components/NotificationScreen';
+import { setFavicon, setDocumentTitle } from './utils/favicon';
+import { NotificationProvider } from './context/NotificationContext';
 
 type Screen = 
   | 'splash' 
@@ -28,17 +30,25 @@ type Screen =
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
-  const [userRole, setUserRole] = useState<'customer' | 'admin' | null>(null);
-  const [navigationData, setNavigationData] = useState<any>(null);
+  const [bookingData, setBookingData] = useState<any>(null);
+  const [userRole, setUserRole] = useState<'guest' | 'staff'>('guest');
 
-  const handleNavigate = (screen: string, data?: any) => {
-    setCurrentScreen(screen as Screen);
-    setNavigationData(data);
+  // Set favicon and title on mount
+  useEffect(() => {
+    setFavicon();
+    setDocumentTitle('Nhà Hàng Gì Cũng Được - Đặt bàn nhanh chóng');
+  }, []);
+
+  const handleNavigate = (screen: Screen, data?: any) => {
+    setCurrentScreen(screen);
+    if (data) {
+      setBookingData(data);
+    }
   };
 
-  const handleLogin = (role: 'customer' | 'admin') => {
+  const handleLogin = (role: 'guest' | 'staff') => {
     setUserRole(role);
-    if (role === 'admin') {
+    if (role === 'staff') {
       setCurrentScreen('admin');
     } else {
       setCurrentScreen('home');
@@ -60,7 +70,7 @@ export default function App() {
         return (
           <BookingScreen 
             onNavigate={handleNavigate} 
-            initialData={navigationData}
+            initialData={bookingData}
           />
         );
       
@@ -68,7 +78,7 @@ export default function App() {
         return (
           <ConfirmationScreen 
             onNavigate={handleNavigate} 
-            bookingData={navigationData}
+            bookingData={bookingData}
           />
         );
       
@@ -76,7 +86,7 @@ export default function App() {
         return (
           <PaymentScreen 
             onNavigate={handleNavigate} 
-            bookingData={navigationData}
+            bookingData={bookingData}
           />
         );
       
@@ -84,7 +94,7 @@ export default function App() {
         return (
           <PaymentSuccessScreen 
             onNavigate={handleNavigate} 
-            paymentData={navigationData}
+            paymentData={bookingData}
           />
         );
       
@@ -95,7 +105,7 @@ export default function App() {
         return (
           <TableMapScreen 
             onNavigate={handleNavigate}
-            initialArea={navigationData?.area}
+            initialArea={bookingData?.area}
           />
         );
       
@@ -114,7 +124,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white">
-      {renderScreen()}
+      <NotificationProvider>
+        {renderScreen()}
+      </NotificationProvider>
     </div>
   );
 }

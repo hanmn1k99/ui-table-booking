@@ -2,71 +2,12 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { motion } from 'motion/react';
-import { ArrowLeft, CheckCircle, Gift, Clock, Info, Bell, Trash2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Gift, Clock, Info, Bell, Trash2, UtensilsCrossed } from 'lucide-react';
+import { notifications as mockNotifications } from '../data/mockData';
 
 interface NotificationScreenProps {
   onNavigate: (screen: string) => void;
 }
-
-interface Notification {
-  id: string;
-  type: 'booking' | 'promotion' | 'reminder' | 'info';
-  title: string;
-  message: string;
-  time: string;
-  isNew: boolean;
-}
-
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'booking',
-    title: 'Đặt bàn thành công',
-    message: 'Bàn số 5 đã được xác nhận cho ngày 15/11/2025 lúc 19:00',
-    time: '5 phút trước',
-    isNew: true,
-  },
-  {
-    id: '2',
-    type: 'promotion',
-    title: 'Ưu đãi đặc biệt 🎉',
-    message: 'Giảm 20% cho đơn hàng từ 500.000đ. Áp dụng từ 14/11 - 20/11',
-    time: '2 giờ trước',
-    isNew: true,
-  },
-  {
-    id: '3',
-    type: 'reminder',
-    title: 'Nhắc nhở đặt bàn',
-    message: 'Bạn có lịch đặt bàn vào ngày mai lúc 19:00. Đừng quên nhé!',
-    time: '1 ngày trước',
-    isNew: false,
-  },
-  {
-    id: '4',
-    type: 'info',
-    title: 'Cập nhật thực đơn',
-    message: 'Nhà hàng vừa bổ sung 10 món ăn mới. Khám phá ngay!',
-    time: '2 ngày trước',
-    isNew: false,
-  },
-  {
-    id: '5',
-    type: 'booking',
-    title: 'Hoàn thành đặt bàn',
-    message: 'Cảm ơn bạn đã sử dụng dịch vụ. Hẹn gặp lại!',
-    time: '3 ngày trước',
-    isNew: false,
-  },
-  {
-    id: '6',
-    type: 'promotion',
-    title: 'Điểm thưởng tích lũy',
-    message: 'Bạn có 250 điểm. Đổi ngay để nhận ưu đãi hấp dẫn!',
-    time: '1 tuần trước',
-    isNew: false,
-  },
-];
 
 export function NotificationScreen({ onNavigate }: NotificationScreenProps) {
   const getNotificationIcon = (type: string) => {
@@ -75,10 +16,10 @@ export function NotificationScreen({ onNavigate }: NotificationScreenProps) {
         return <CheckCircle className="w-6 h-6 text-green-600" />;
       case 'promotion':
         return <Gift className="w-6 h-6 text-orange-600" />;
-      case 'reminder':
-        return <Clock className="w-6 h-6 text-blue-600" />;
-      case 'info':
-        return <Info className="w-6 h-6 text-purple-600" />;
+      case 'menu':
+        return <UtensilsCrossed className="w-6 h-6 text-purple-600" />;
+      case 'system':
+        return <Info className="w-6 h-6 text-blue-600" />;
       default:
         return <Bell className="w-6 h-6 text-gray-600" />;
     }
@@ -90,17 +31,36 @@ export function NotificationScreen({ onNavigate }: NotificationScreenProps) {
         return 'bg-green-100';
       case 'promotion':
         return 'bg-orange-100';
-      case 'reminder':
-        return 'bg-blue-100';
-      case 'info':
+      case 'menu':
         return 'bg-purple-100';
+      case 'system':
+        return 'bg-blue-100';
       default:
         return 'bg-gray-100';
     }
   };
 
-  const newNotifications = mockNotifications.filter(n => n.isNew);
-  const oldNotifications = mockNotifications.filter(n => !n.isNew);
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffHours < 1) {
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      return `${diffMins} phút trước`;
+    } else if (diffHours < 24) {
+      return `${diffHours} giờ trước`;
+    } else if (diffDays === 1) {
+      return '1 ngày trước';
+    } else {
+      return `${diffDays} ngày trước`;
+    }
+  };
+
+  const newNotifications = mockNotifications.filter(n => !n.read);
+  const oldNotifications = mockNotifications.filter(n => n.read);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex flex-col">
@@ -172,7 +132,7 @@ export function NotificationScreen({ onNavigate }: NotificationScreenProps) {
                         <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                           {notification.message}
                         </p>
-                        <p className="text-xs text-gray-400">{notification.time}</p>
+                        <p className="text-xs text-gray-400">{formatTime(notification.timestamp)}</p>
                       </div>
                     </div>
                   </Card>
@@ -208,7 +168,7 @@ export function NotificationScreen({ onNavigate }: NotificationScreenProps) {
                         <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                           {notification.message}
                         </p>
-                        <p className="text-xs text-gray-400">{notification.time}</p>
+                        <p className="text-xs text-gray-400">{formatTime(notification.timestamp)}</p>
                       </div>
                     </div>
                   </Card>

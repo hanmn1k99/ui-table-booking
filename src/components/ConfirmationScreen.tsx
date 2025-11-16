@@ -2,7 +2,7 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { motion } from 'motion/react';
-import { CheckCircle, Users, CreditCard, Home } from 'lucide-react';
+import { CheckCircle, Users, CreditCard, Home, ArrowLeft, Calendar, Clock, MapPin } from 'lucide-react';
 
 interface ConfirmationScreenProps {
   onNavigate: (screen: string) => void;
@@ -13,6 +13,20 @@ export function ConfirmationScreen({ onNavigate, bookingData }: ConfirmationScre
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex flex-col">
+      {/* Header */}
+      <div className="bg-white shadow-sm px-6 py-4">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => onNavigate('booking', bookingData)}
+            className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          </button>
+          <h2 className="text-gray-900">Xác nhận đặt bàn</h2>
+          <div className="w-10"></div>
+        </div>
+      </div>
+
       {/* Content */}
       <div className="flex-1 overflow-auto px-6 py-12">
         <motion.div
@@ -40,7 +54,7 @@ export function ConfirmationScreen({ onNavigate, bookingData }: ConfirmationScre
           {/* Booking Summary */}
           <Card className="p-6 rounded-3xl shadow-lg mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-gray-900">Thông tin bàn</h3>
+              <h3 className="text-gray-900">Thông tin đặt bàn</h3>
               <Badge className="bg-orange-100 text-orange-700 border-orange-200">
                 Đang chờ
               </Badge>
@@ -49,21 +63,63 @@ export function ConfirmationScreen({ onNavigate, bookingData }: ConfirmationScre
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Bàn số</p>
-                  <p className="text-gray-900">{bookingData?.tableNumber}</p>
+                  <p className="text-sm text-gray-600 mb-1">Mã bàn</p>
+                  <p className="text-gray-900">{bookingData?.tableCode}</p>
                 </div>
                 <div className="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center">
                   <span className="text-3xl">🪑</span>
                 </div>
               </div>
 
-              <div className="flex items-start pt-4 border-t border-gray-100">
-                <div className="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center mr-3">
-                  <Users className="w-5 h-5 text-orange-600" />
+              <div className="pt-4 border-t border-gray-100 space-y-3">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center mr-3">
+                    <MapPin className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Khu vực</p>
+                    <p className="text-gray-900">{bookingData?.area}</p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-600 mb-1">Sức chứa</p>
-                  <p className="text-gray-900">{bookingData?.capacity} người</p>
+
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center mr-3">
+                    <Calendar className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Ngày đặt</p>
+                    <p className="text-gray-900">{bookingData?.date}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center mr-3">
+                    <Clock className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Giờ đặt</p>
+                    <p className="text-gray-900">{bookingData?.time} ({bookingData?.duration}h)</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center mr-3">
+                    <Users className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Số lượng khách</p>
+                    <p className="text-gray-900">{bookingData?.guests} người</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center mr-3">
+                    <span className="text-lg">💺</span>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Loại bàn</p>
+                    <p className="text-gray-900">{bookingData?.capacity} chỗ ngồi</p>
+                  </div>
                 </div>
               </div>
             </div>

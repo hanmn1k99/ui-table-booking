@@ -6,7 +6,8 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { motion } from 'motion/react';
-import { ArrowLeft, CreditCard, Wallet, QrCode, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CreditCard, Wallet, QrCode, CheckCircle2, User, Phone, Calendar, Users, MapPin } from 'lucide-react';
+import { useNotification } from '../context/NotificationContext';
 
 interface PaymentScreenProps {
   onNavigate: (screen: string, data?: any) => void;
@@ -17,19 +18,32 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { showSuccess } = useNotification();
+  
+  // Customer info
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
 
   const depositAmount = 50000; // 50k VND deposit
 
   const handlePayment = () => {
+    if (!customerName || !customerPhone) {
+      return;
+    }
+    
     setIsProcessing(true);
     // Simulate payment processing
     setTimeout(() => {
       setIsProcessing(false);
       setIsSuccess(true);
+      showSuccess('Đặt bàn thành công!', `Bàn ${bookingData?.tableCode} đã được đặt cho ${customerName}`);
+      
       // Navigate to success screen after 1.5s
       setTimeout(() => {
         onNavigate('paymentSuccess', {
           ...bookingData,
+          customerName,
+          customerPhone,
           amount: depositAmount,
           paymentMethod
         });
@@ -79,20 +93,101 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-md mx-auto space-y-6"
         >
-          {/* Booking Info */}
+          {/* Customer Information */}
+          <Card className="p-6 rounded-3xl shadow-sm">
+            <h3 className="text-gray-900 mb-4">Thông tin khách hàng</h3>
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="customerName" className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-orange-500" />
+                  Họ và tên
+                </Label>
+                <Input
+                  id="customerName"
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Nguyễn Văn A"
+                  className="h-12 rounded-2xl border-gray-200"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="customerPhone" className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-orange-500" />
+                  Số điện thoại
+                </Label>
+                <Input
+                  id="customerPhone"
+                  type="tel"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="0912345678"
+                  className="h-12 rounded-2xl border-gray-200"
+                  required
+                />
+              </div>
+            </div>
+          </Card>
+
+          {/* Booking Summary */}
           <Card className="p-6 rounded-3xl shadow-lg bg-gradient-to-br from-orange-50 to-white border-orange-100">
             <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Bàn số</p>
-                <p className="text-gray-900">{bookingData?.tableNumber}</p>
-              </div>
+              <h3 className="text-gray-900">Thông tin đặt bàn</h3>
               <Badge className="bg-orange-100 text-orange-700 border-orange-200">
                 Đặt cọc
               </Badge>
             </div>
-            <div className="pt-4 border-t border-gray-200">
+            
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Mã bàn
+                </span>
+                <span className="text-gray-900">{bookingData?.tableCode}</span>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Khu vực
+                </span>
+                <span className="text-gray-900">{bookingData?.area}</span>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Ngày giờ đặt
+                </span>
+                <span className="text-gray-900">{bookingData?.date} - {bookingData?.time}</span>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600 flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  Số lượng khách
+                </span>
+                <span className="text-gray-900">{bookingData?.guests} người</span>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Loại bàn</span>
+                <span className="text-gray-900">{bookingData?.capacity} chỗ ngồi</span>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Thời gian</span>
+                <span className="text-gray-900">{bookingData?.duration} giờ</span>
+              </div>
+            </div>
+            
+            <div className="pt-4 mt-4 border-t border-orange-200">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Tiền đặt cọc</span>
+                <span className="text-gray-900">Tiền đặt cọc</span>
                 <span className="text-orange-600">
                   {depositAmount.toLocaleString('vi-VN')}đ
                 </span>
@@ -246,7 +341,7 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
           {/* Payment Button */}
           <Button
             onClick={handlePayment}
-            disabled={isProcessing}
+            disabled={isProcessing || !customerName || !customerPhone}
             className="w-full h-14 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl shadow-lg shadow-orange-200 disabled:opacity-50"
           >
             {isProcessing ? (

@@ -46,7 +46,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   };
 
   const availableTablesCount = tables.filter(t => t.status === 'available').length;
-  const todayBookingsCount = bookings.filter(b => b.date === searchDate && b.status === 'confirmed').length;
+  const bookedTablesCount = tables.filter(t => t.status === 'booked').length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex flex-col">
@@ -58,8 +58,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               <span className="text-2xl">🍽️</span>
             </div>
             <div className="ml-3">
-              <span className="text-orange-600">Quản Lý Đặt Bàn</span>
-              <p className="text-xs text-gray-500">Xin chào!</p>
+              <span className="text-orange-600">Nhà Hàng Gì Cũng Được</span>
+              <p className="text-xs text-gray-500">Xin chào! 👋</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -122,7 +122,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Đặt hôm nay</p>
-                  <p className="text-orange-600">{todayBookingsCount}</p>
+                  <p className="text-xs text-gray-400 mb-1">{new Date().toLocaleDateString('vi-VN')}</p>
+                  <p className="text-orange-600">{bookedTablesCount} bàn</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-orange-600" />
@@ -137,10 +138,11 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="mb-6"
         >
           <Button
             onClick={() => onNavigate('booking')}
-            className="w-full h-14 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl shadow-lg shadow-orange-200 mb-6"
+            className="max-w-xs w-full h-12 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl shadow-lg shadow-orange-200"
           >
             <Calendar className="w-5 h-5 mr-2" />
             Đặt bàn ngay
@@ -174,10 +176,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 transition={{ delay: index * 0.05 }}
               >
                 <Card 
-                  className={`p-4 rounded-2xl border-2 cursor-pointer transition-all hover:shadow-md ${
+                  className={`p-4 rounded-2xl border-2 transition-all hover:shadow-md ${
                     table.status === 'available' 
-                      ? 'bg-white hover:border-orange-300' 
-                      : 'bg-gray-50 opacity-75'
+                      ? 'bg-white hover:border-orange-300 cursor-pointer' 
+                      : 'bg-gray-50 opacity-75 cursor-not-allowed'
                   }`}
                   onClick={() => {
                     if (table.status === 'available') {
@@ -187,7 +189,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <p className="text-gray-900 mb-1">{table.number}</p>
+                      <p className="text-gray-900 mb-1">{table.code}</p>
                       <div className="flex items-center text-sm text-gray-600">
                         <Users className="w-4 h-4 mr-1" />
                         {table.capacity} người

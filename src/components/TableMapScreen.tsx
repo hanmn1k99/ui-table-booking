@@ -18,13 +18,13 @@ export function TableMapScreen({ onNavigate, initialArea }: TableMapScreenProps)
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'available':
-        return 'bg-green-500 hover:bg-green-600';
+        return 'bg-green-500 hover:bg-green-600 cursor-pointer';
       case 'booked':
-        return 'bg-orange-500 hover:bg-orange-600';
+        return 'bg-orange-500';
       case 'serving':
-        return 'bg-blue-500 hover:bg-blue-600';
+        return 'bg-blue-500';
       case 'cleaning':
-        return 'bg-gray-500 hover:bg-gray-600';
+        return 'bg-yellow-500';
       default:
         return 'bg-gray-500';
     }
@@ -35,7 +35,7 @@ export function TableMapScreen({ onNavigate, initialArea }: TableMapScreenProps)
       case 'available': return 'Trống';
       case 'booked': return 'Đã đặt';
       case 'serving': return 'Phục vụ';
-      case 'cleaning': return 'Dọn dẹp';
+      case 'cleaning': return 'Đang dọn';
       default: return status;
     }
   };
@@ -134,12 +134,12 @@ export function TableMapScreen({ onNavigate, initialArea }: TableMapScreenProps)
                       onNavigate('booking', { tableId: table.id });
                     }
                   }}
-                  className={`w-20 h-20 rounded-2xl ${getStatusColor(table.status)} text-white shadow-lg transition-all transform hover:scale-110 flex flex-col items-center justify-center ${
-                    table.status !== 'available' ? 'cursor-not-allowed opacity-75' : ''
-                  }`}
+                  className={`w-20 h-20 rounded-2xl ${getStatusColor(table.status)} text-white shadow-lg transition-all transform ${
+                    table.status === 'available' ? 'hover:scale-110' : 'cursor-not-allowed opacity-75'
+                  } flex flex-col items-center justify-center`}
                 >
                   <span className="text-lg mb-1">🪑</span>
-                  <span className="text-xs">{table.number}</span>
+                  <span className="text-xs">{table.code}</span>
                 </button>
                 <div className="mt-2 text-center">
                   <p className="text-xs text-gray-600">{table.capacity} người</p>
