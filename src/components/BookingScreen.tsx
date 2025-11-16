@@ -30,7 +30,6 @@ export function BookingScreen({ onNavigate, initialData }: BookingScreenProps) {
   const [notes, setNotes] = useState('');
   
   // Customer info
-  const [salutation, setSalutation] = useState('Anh');
   const [customerName, setCustomerName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneValidationError, setPhoneValidationError] = useState('');
@@ -83,7 +82,6 @@ export function BookingScreen({ onNavigate, initialData }: BookingScreenProps) {
       duration,
       guests,
       notes,
-      salutation,
       customerName,
       phoneNumber
     };
@@ -120,33 +118,20 @@ export function BookingScreen({ onNavigate, initialData }: BookingScreenProps) {
               <h3 className="text-gray-900 mb-4">Thông tin khách hàng</h3>
               
               <div className="space-y-4">
-                {/* Salutation and Name - Same Row */}
+                {/* Name */}
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
                     <User className="w-4 h-4 text-orange-500" />
                     Họ và tên
                   </Label>
-                  <div className="flex gap-2">
-                    <Select value={salutation} onValueChange={setSalutation}>
-                      <SelectTrigger className="h-12 rounded-2xl border-gray-200 w-[100px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Anh">Anh</SelectItem>
-                        <SelectItem value="Chị">Chị</SelectItem>
-                        <SelectItem value="Ông">Ông</SelectItem>
-                        <SelectItem value="Bà">Bà</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      id="customerName"
-                      type="text"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      placeholder="Nhập tên"
-                      className="h-12 rounded-2xl border-gray-200 flex-1"
-                    />
-                  </div>
+                  <Input
+                    id="customerName"
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Nhập tên"
+                    className="h-12 rounded-2xl border-gray-200 flex-1"
+                  />
                 </div>
 
                 {/* Phone Number */}

@@ -4,7 +4,8 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { motion } from 'motion/react';
-import { Calendar, History, User, LogOut, Users, Clock, Bell, MapPin, Search } from 'lucide-react';
+import { Calendar, History, User, LogOut, Users, Bell, MapPin, Search, Clock } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 import { Footer } from './Footer';
 import { tables } from '../data/mockData';
 import { NotificationPopup } from './NotificationPopup';
@@ -13,13 +14,42 @@ interface HomeScreenProps {
   onNavigate: (screen: string, data?: any) => void;
 }
 
+// Generate time slots từ 10:00 đến 22:00
+const generateOperatingHours = () => {
+  const hours = [];
+  for (let i = 10; i <= 22; i++) {
+    hours.push(`${i.toString().padStart(2, '0')}:00`);
+    if (i < 22) {
+      hours.push(`${i.toString().padStart(2, '0')}:30`);
+    }
+  }
+  return hours;
+};
+
+// Mock data giờ đã đặt cho mỗi bàn
+const mockBookedHours: { [tableId: string]: string[] } = {
+  '1': ['12:00', '12:30', '13:00', '18:00', '18:30', '19:00'],
+  '2': ['11:00', '11:30', '19:00', '19:30', '20:00'],
+  '3': ['13:00', '13:30', '14:00', '20:00', '20:30'],
+  '4': ['10:00', '10:30', '17:00', '17:30', '18:00'],
+  '5': ['14:00', '14:30', '15:00', '19:00', '19:30'],
+  '6': ['11:00', '12:00', '18:00', '19:00', '20:00'],
+  '7': ['10:00', '11:00', '16:00', '17:00', '18:00'],
+  '8': ['13:00', '14:00', '19:00', '20:00', '21:00'],
+};
+
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [searchDate, setSearchDate] = useState('2025-11-04');
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationButtonRef = useRef<HTMLButtonElement>(null);
+  
+  // Available Hours Dialog State
+  const [isAvailableHoursDialogOpen, setIsAvailableHoursDialogOpen] = useState(false);
+  const [selectedTableForHours, setSelectedTableForHours] = useState<any>(null);
 
   const filteredTables = tables;
+  const timeSlots = generateOperatingHours();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -151,7 +181,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             {filteredTables.map((table, index) => (
               <motion.div
                 key={table.id}
@@ -159,24 +189,14 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card 
-                  className={`p-4 rounded-2xl border-2 transition-all ${
-                    table.status === 'available' 
-                      ? 'bg-white hover:border-orange-300 hover:shadow-md cursor-pointer' 
-                      : 'bg-gray-50 opacity-75'
-                  }`}
-                  onClick={() => {
-                    if (table.status === 'available') {
-                      onNavigate('booking', { tableId: table.id });
-                    }
-                  }}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <p className="text-gray-900 mb-1">{table.code}</p>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Users className="w-4 h-4 mr-1" />
-                        {table.capacity} người
+                <Card className="p-3 rounded-2xl border-2 transition-all min-h-[130px] flex flex-col justify-between bg-white">
+                  {/* Header: Tên bàn + Số người + Badge */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex flex-col gap-2">
+                      <p className="text-gray-900">{table.code}</p>
+                      <div className="flex items-baseline gap-1 text-sm text-gray-600">
+                        <Users className="w-4 h-4" />
+                        <span>{table.capacity} người</span>
                       </div>
                     </div>
                     <Badge
@@ -186,13 +206,35 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       {getStatusText(table.status)}
                     </Badge>
                   </div>
-                  
-                  {table.status === 'booked' && (
-                    <div className="flex items-center text-xs text-gray-500 bg-orange-50 rounded-lg px-2 py-1">
+
+                  {/* Footer: Action Buttons */}
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTableForHours(table);
+                        setIsAvailableHoursDialogOpen(true);
+                      }}
+                      className="flex-1 text-xs rounded-xl h-8 border-green-200 text-green-700 hover:bg-green-50"
+                    >
                       <Clock className="w-3 h-3 mr-1" />
-                      19:00
-                    </div>
-                  )}
+                      Xem giờ trống
+                    </Button>
+                    {table.status === 'available' && (
+                      <Button
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onNavigate('booking', { tableId: table.id });
+                        }}
+                        className="flex-1 text-xs rounded-xl h-8 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white"
+                      >
+                        Đặt ngay
+                      </Button>
+                    )}
+                  </div>
                 </Card>
               </motion.div>
             ))}
@@ -206,6 +248,72 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         onClose={() => setShowNotifications(false)}
         anchorRef={notificationButtonRef}
       />
+
+      {/* Available Hours Dialog */}
+      <Dialog open={isAvailableHoursDialogOpen} onOpenChange={setIsAvailableHoursDialogOpen}>
+        <DialogContent className="rounded-3xl max-w-md">
+          <DialogHeader>
+            <DialogTitle>Giờ trống - Bàn {selectedTableForHours?.code}</DialogTitle>
+            <DialogDescription>
+              Thời gian hoạt động: 10:00 - 22:00
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="grid grid-cols-4 gap-2">
+              {timeSlots.map((hour) => {
+                const bookedHours = mockBookedHours[selectedTableForHours?.id || ''] || [];
+                const isBooked = bookedHours.includes(hour);
+
+                return (
+                  <motion.button
+                    key={hour}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={!isBooked ? { scale: 1.05 } : {}}
+                    disabled={isBooked}
+                    onClick={() => {
+                      if (!isBooked) {
+                        onNavigate('booking', { tableId: selectedTableForHours?.id, time: hour });
+                        setIsAvailableHoursDialogOpen(false);
+                      }
+                    }}
+                    className={`
+                      px-3 py-2 rounded-lg text-sm transition-all
+                      ${isBooked 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50' 
+                        : 'bg-gradient-to-r from-green-50 to-green-100 text-green-700 hover:from-green-100 hover:to-green-200 hover:shadow-md cursor-pointer border-2 border-green-200'
+                      }
+                    `}
+                  >
+                    {hour}
+                  </motion.button>
+                );
+              })}
+            </div>
+
+            {/* Legend */}
+            <div className="mt-6 flex items-center justify-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-200"></div>
+                <span className="text-xs text-gray-600">Giờ trống</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded bg-gray-100"></div>
+                <span className="text-xs text-gray-600">Đã đặt</span>
+              </div>
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            onClick={() => setIsAvailableHoursDialogOpen(false)}
+            className="w-full h-12 rounded-2xl"
+          >
+            Đóng
+          </Button>
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <Footer />

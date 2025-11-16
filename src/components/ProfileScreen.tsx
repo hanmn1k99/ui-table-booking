@@ -327,7 +327,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
             {selectedBooking && (
               <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
                 <p className="text-sm text-orange-800">
-                  <strong>Lưu ý:</strong> Thời gian đặt bàn: {selectedBooking.date} lúc {selectedBooking.time}
+                  <strong>Lưu ý:</strong> Thời gian đặt bàn: {selectedBooking.time} {selectedBooking.date}
                 </p>
                 <p className="text-sm text-orange-700 mt-2">
                   • Hủy trước 1h: Hoàn cọc 100%<br />

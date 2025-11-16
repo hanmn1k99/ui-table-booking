@@ -67,7 +67,7 @@ export function ConfirmationScreen({ onNavigate, bookingData }: ConfirmationScre
                 <div className="pb-4 border-b border-gray-100 space-y-3">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Khách hàng</p>
-                    <p className="text-gray-900">{bookingData?.salutation} {bookingData?.customerName}</p>
+                    <p className="text-gray-900">{bookingData?.customerName}</p>
                   </div>
                   {bookingData?.phoneNumber && (
                     <div>
