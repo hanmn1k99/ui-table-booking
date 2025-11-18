@@ -80,12 +80,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const bookedTablesCount = tables.filter(t => t.status === 'booked').length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-orange-50 flex flex-col">
       {/* Header */}
       <div className="bg-white shadow-sm px-6 py-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-linear-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
               <span className="text-2xl">🍽️</span>
             </div>
             <div className="ml-3">
@@ -121,7 +121,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="p-4 bg-gradient-to-br from-green-50 to-white border-green-100 rounded-2xl">
+            <Card className="p-4 bg-linear-to-br from-green-50 to-white border-green-100 rounded-2xl">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Bàn trống</p>
@@ -139,7 +139,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="p-4 bg-gradient-to-br from-orange-50 to-white border-orange-100 rounded-2xl">
+            <Card className="p-4 bg-linear-to-br from-orange-50 to-white border-orange-100 rounded-2xl">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Đặt hôm nay</p>

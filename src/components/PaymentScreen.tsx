@@ -44,13 +44,13 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center px-6">
+      <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center px-6">
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="text-center"
         >
-          <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-200">
+          <div className="w-24 h-24 bg-linear-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-200">
             <CheckCircle2 className="w-12 h-12 text-white" />
           </div>
           <h2 className="text-green-600 mb-2">Thanh toán thành công!</h2>
@@ -61,7 +61,7 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-orange-50 flex flex-col">
       {/* Header */}
       <div className="bg-white shadow-sm px-6 py-4">
         <div className="flex items-center justify-between">
@@ -85,7 +85,7 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
           className="max-w-md mx-auto space-y-6"
         >
           {/* Booking Summary */}
-          <Card className="p-6 rounded-3xl shadow-lg bg-gradient-to-br from-orange-50 to-white border-orange-100">
+          <Card className="p-6 rounded-3xl shadow-lg bg-linear-to-br from-orange-50 to-white border-orange-100">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-gray-900">Thông tin đặt bàn</h3>
               <Badge className="bg-orange-100 text-orange-700 border-orange-200">
@@ -164,7 +164,7 @@ export function PaymentScreen({ onNavigate, bookingData }: PaymentScreenProps) {
             >
               <Card className="p-4 rounded-2xl border-2 border-orange-500 bg-orange-50">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mr-3">
+                  <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-green-500 to-green-600 flex items-center justify-center mr-3">
                     <QrCode className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">

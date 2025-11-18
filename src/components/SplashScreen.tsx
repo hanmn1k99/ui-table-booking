@@ -16,7 +16,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
   }, [onFinish]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex flex-col px-6">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 to-white flex flex-col px-6">
       {/* Content - centered */}
       <div className="flex-1 flex flex-col items-center justify-center">
         <motion.div
@@ -25,7 +25,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="text-center"
         >
-          <div className="w-24 h-24 bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+          <div className="w-24 h-24 bg-linear-to-br from-orange-500 to-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
             <span className="text-5xl">🍽️</span>
           </div>
           

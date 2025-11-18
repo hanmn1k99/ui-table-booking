@@ -9,10 +9,10 @@ interface LoginScreenProps {
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex flex-col px-6 py-8">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-orange-50 flex flex-col px-6 py-8">
       {/* Logo - Top Left */}
       <div className="flex items-center mb-12">
-        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+        <div className="w-12 h-12 bg-linear-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
           <span className="text-2xl">🍽️</span>
         </div>
         <span className="ml-3 text-orange-600">Quản Lý Đặt Bàn</span>

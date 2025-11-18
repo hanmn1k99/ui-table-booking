@@ -180,7 +180,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-orange-50">
       {/* Header */}
       <div className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
         <Button
@@ -197,7 +197,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
 
       <div className="px-6 py-8 max-w-6xl mx-auto">
         {/* Main Logo - Hero Section */}
-        <Card className="p-12 rounded-3xl bg-gradient-to-br from-white to-orange-50 border-2 border-orange-100 mb-8">
+        <Card className="p-12 rounded-3xl bg-linear-to-br from-white to-orange-50 border-2 border-orange-100 mb-8">
           <div className="text-center">
             <div className="flex items-center justify-between mb-6">
               <p className="text-sm text-gray-600">Logo chính</p>
@@ -211,7 +211,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
               </Button>
             </div>
             <div id="main-logo" className="flex flex-col items-center justify-center mb-8">
-              <div className="w-40 h-40 bg-gradient-to-br from-orange-500 to-orange-600 rounded-[40px] flex items-center justify-center shadow-2xl mb-6">
+              <div className="w-40 h-40 bg-linear-to-br from-orange-500 to-orange-600 rounded-[40px] flex items-center justify-center shadow-2xl mb-6">
                 <span className="text-8xl">🍽️</span>
               </div>
               <h2 className="text-orange-600 mb-2">Nhà Hàng Gì Cũng Được</h2>
@@ -235,8 +235,8 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
                 <Download className="w-4 h-4" />
               </Button>
             </div>
-            <div id="icon-large" className="bg-gradient-to-br from-orange-50 to-white rounded-2xl p-8 flex items-center justify-center">
-              <div className="w-32 h-32 bg-gradient-to-br from-orange-500 to-orange-600 rounded-[32px] flex items-center justify-center shadow-xl">
+            <div id="icon-large" className="bg-linear-to-br from-orange-50 to-white rounded-2xl p-8 flex items-center justify-center">
+              <div className="w-32 h-32 bg-linear-to-br from-orange-500 to-orange-600 rounded-[32px] flex items-center justify-center shadow-xl">
                 <span className="text-7xl">🍽️</span>
               </div>
             </div>
@@ -255,9 +255,9 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
                 <Download className="w-4 h-4" />
               </Button>
             </div>
-            <div id="logo-horizontal" className="bg-gradient-to-br from-orange-50 to-white rounded-2xl p-8 flex items-center justify-center">
+            <div id="logo-horizontal" className="bg-linear-to-br from-orange-50 to-white rounded-2xl p-8 flex items-center justify-center">
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-[20px] flex items-center justify-center shadow-lg">
+                <div className="w-20 h-20 bg-linear-to-br from-orange-500 to-orange-600 rounded-[20px] flex items-center justify-center shadow-lg">
                   <span className="text-5xl">🍽️</span>
                 </div>
                 <div className="text-left">
@@ -283,10 +283,10 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
             </div>
             <div id="logo-dark" className="bg-gray-900 rounded-2xl p-8 flex items-center justify-center">
               <div className="flex items-center gap-3">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-[16px] flex items-center justify-center shadow-lg">
+                <div className="w-16 h-16 bg-linear-to-br from-orange-500 to-orange-600 rounded-[16px] flex items-center justify-center shadow-lg">
                   <span className="text-4xl">🍽️</span>
                 </div>
-                <span className="text-white">Nhà Hàng Gì Cũng Được</span>
+                <span className="text-white">Quản Lý Đặt Bàn</span>
               </div>
             </div>
           </Card>
@@ -304,14 +304,14 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
                 <Download className="w-4 h-4" />
               </Button>
             </div>
-            <div id="icon-small" className="bg-gradient-to-br from-orange-50 to-white rounded-2xl p-8 flex items-center justify-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div id="icon-small" className="bg-linear-to-br from-orange-50 to-white rounded-2xl p-8 flex items-center justify-center gap-4">
+              <div className="w-16 h-16 bg-linear-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-3xl">🍽️</span>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
+              <div className="w-12 h-12 bg-linear-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
                 <span className="text-2xl">🍽️</span>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
+              <div className="w-10 h-10 bg-linear-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
                 <span className="text-xl">🍽️</span>
               </div>
             </div>
@@ -323,9 +323,9 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
           <p className="text-sm text-gray-600 mb-6">Các kích thước sử dụng</p>
           <div className="space-y-6">
             {/* Extra Large */}
-            <div className="flex items-center justify-center py-6 bg-gradient-to-br from-orange-50 to-white rounded-2xl">
+            <div className="flex items-center justify-center py-6 bg-linear-to-br from-orange-50 to-white rounded-2xl">
               <div className="flex items-center gap-3">
-                <div className="w-24 h-24 bg-gradient-to-br from-orange-500 to-orange-600 rounded-[24px] flex items-center justify-center shadow-xl">
+                <div className="w-24 h-24 bg-linear-to-br from-orange-500 to-orange-600 rounded-[24px] flex items-center justify-center shadow-xl">
                   <span className="text-6xl">🍽️</span>
                 </div>
                 <div>
@@ -338,7 +338,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
             {/* Large */}
             <div className="flex items-center justify-center py-4 bg-white rounded-2xl border-2 border-orange-100">
               <div className="flex items-center gap-3">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-[16px] flex items-center justify-center shadow-lg">
+                <div className="w-16 h-16 bg-linear-to-br from-orange-500 to-orange-600 rounded-[16px] flex items-center justify-center shadow-lg">
                   <span className="text-4xl">🍽️</span>
                 </div>
                 <span className="text-orange-600">Nhà Hàng Gì Cũng Được</span>
@@ -348,7 +348,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
             {/* Medium */}
             <div className="flex items-center justify-center py-3 bg-white rounded-xl border border-gray-200">
               <div className="flex items-center gap-2">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-12 h-12 bg-linear-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
                   <span className="text-3xl">🍽️</span>
                 </div>
                 <span className="text-orange-600">Nhà Hàng Gì Cũng Được</span>
@@ -358,7 +358,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
             {/* Small */}
             <div className="flex items-center justify-center py-2 bg-white rounded-lg border border-gray-200">
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-linear-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
                   <span className="text-2xl">🍽️</span>
                 </div>
                 <span className="text-sm text-orange-600">Nhà Hàng Gì Cũng Được</span>
@@ -372,7 +372,7 @@ export function LogoPage({ onNavigate }: LogoPageProps) {
           <p className="text-sm text-gray-600 mb-6">Bảng màu thương hiệu</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <div className="w-full h-24 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg mb-3"></div>
+              <div className="w-full h-24 bg-linear-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg mb-3"></div>
               <p className="text-xs text-gray-900 mb-1">Primary Gradient</p>
               <p className="text-xs text-gray-500">#FF8A00 → #FF6B00</p>
             </div>

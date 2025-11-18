@@ -139,7 +139,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-orange-50 flex flex-col">
       {/* Header */}
       <div className="bg-white shadow-sm px-6 py-4">
         <div className="flex items-center justify-between mb-4">
@@ -164,7 +164,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <Card className="p-6 rounded-3xl bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+          <Card className="p-6 rounded-3xl bg-linear-to-br from-orange-500 to-orange-600 text-white">
             <div className="flex items-center">
               <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4">
                 <User className="w-8 h-8 text-white" />

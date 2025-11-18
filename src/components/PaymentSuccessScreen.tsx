@@ -27,7 +27,7 @@ export function PaymentSuccessScreen({ onNavigate, paymentData }: PaymentSuccess
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-orange-50 flex flex-col">
       {/* Content */}
       <div className="flex-1 overflow-auto px-6 py-12">
         <motion.div
@@ -42,7 +42,7 @@ export function PaymentSuccessScreen({ onNavigate, paymentData }: PaymentSuccess
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="w-24 h-24 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-200"
+              className="w-24 h-24 bg-linear-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-200"
             >
               <CheckCircle className="w-12 h-12 text-white" />
             </motion.div>
@@ -53,7 +53,7 @@ export function PaymentSuccessScreen({ onNavigate, paymentData }: PaymentSuccess
           </div>
 
           {/* Booking Code */}
-          <Card className="p-6 rounded-3xl shadow-lg mb-4 bg-gradient-to-br from-orange-500 to-orange-600">
+          <Card className="p-6 rounded-3xl shadow-lg mb-4 bg-linear-to-br from-orange-500 to-orange-600">
             <div className="text-center">
               <p className="text-sm text-white/80 mb-2">Mã đặt bàn</p>
               <p className="text-white mb-4">{bookingCode}</p>
